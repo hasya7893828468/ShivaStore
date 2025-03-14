@@ -20,7 +20,7 @@ const VendorLocation = () => {
 
           // ✅ Send location to backend
           axios
-            .post("http://192.168.144.2:5000/api/vendors/update-location", {
+            .post("http://192.168.144.2:5001/api/vendors/update-location", {
               vendorId,
               latitude: newLocation.latitude,
               longitude: newLocation.longitude,
@@ -39,7 +39,7 @@ const VendorLocation = () => {
     if (!vendorId) return;
 
     try {
-      const response = await axios.get(`http://192.168.144.2:5000/api/vendors/vendor-location/${vendorId}`);
+      const response = await axios.get(`http://192.168.144.2:5001/api/vendors/vendor-location/${vendorId}`);
       if (response.data.latitude && response.data.longitude) {
         setVendorLocation({
           latitude: response.data.latitude,
@@ -64,7 +64,7 @@ const VendorLocation = () => {
   useEffect(() => {
     if (vendorId) {
       axios
-        .get(`http://192.168.144.2:5000/api/vendor-cart/${vendorId}`)
+        .get(`http://192.168.144.2:5001/api/vendor-cart/${vendorId}`)
         .then((response) => {
           console.log("📥 Orders received:", response.data);
           setOrders(response.data);

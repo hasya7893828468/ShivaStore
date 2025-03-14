@@ -51,7 +51,7 @@ const OrderList: React.FC<OrderListProps> = ({ orders = [] }) => {
             renderItem={({ item }) => (
               <View style={styles.itemContainer}>
                 <Image
-                  source={{ uri: item.img.startsWith("http") ? item.img : `http://192.168.144.2:5000${item.img}` }}
+                  source={{ uri: item.img.startsWith("http") ? item.img : `http://192.168.144.2:5001${item.img}` }}
                   style={styles.itemImage}
                 />
                 <View style={styles.itemDetails}>

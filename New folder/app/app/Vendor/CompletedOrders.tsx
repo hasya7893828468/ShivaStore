@@ -29,7 +29,7 @@ const CompletedOrders: React.FC = () => {
     const fetchOrders = async () => {
       try {
         console.log(`Fetching completed orders for vendor: ${vendorId}`);
-        const response = await axios.get(`http://192.168.144.2:5000/api/vendor-cart/${vendorId}`);
+        const response = await axios.get(`http://192.168.144.2:5001/api/vendor-cart/${vendorId}`);
         console.log("Fetched completed orders:", response.data);
         
         const completed = response.data.filter((order) => order.status === "Completed");
@@ -71,8 +71,12 @@ const CompletedOrders: React.FC = () => {
                   <Text style={styles.orderId}>Order ID: {item._id}</Text>
                   <Text style={styles.customer}>📅 Date: {new Date(item.createdAt).toLocaleString()}</Text>
                   <Text style={styles.customer}>👤 Customer: {item.userName || "Unknown User"}</Text>
-                  <Text style={styles.customer}>📞 Phone: {item.phone || "No phone provided"}</Text>
-                  <Text style={styles.customer}>🏠 Address: {item.address || "No address provided"}</Text>
+  {/* Call Button */}
+  <TouchableOpacity onPress={() => item.phone && Linking.openURL(`tel:${item.phone}`)}>
+    <Text style={[styles.customer, { color: "blue", textDecorationLine: "underline" }]}>
+      📞 Call: {item.phone || "No phone provided"}
+    </Text>
+  </TouchableOpacity>                  <Text style={styles.customer}>🏠 Address: {item.address || "No address provided"}</Text>
                   {item.userLocation?.latitude && item.userLocation?.longitude && (
                     <TouchableOpacity
                       onPress={() =>
@@ -92,7 +96,7 @@ const CompletedOrders: React.FC = () => {
                     renderItem={({ item }) => {
                       const imageUrl = item.img.startsWith("http") 
                         ? item.img 
-                        : `http://192.168.144.2:5000/${item.img.replace(/^\/+/, "")}`;
+                        : `http://192.168.144.2:5001/${item.img.replace(/^\/+/, "")}`;
 
                       const itemTotal = (item.price * item.quantity).toFixed(2);
 

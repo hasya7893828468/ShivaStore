@@ -24,20 +24,20 @@ const Drinks: React.FC = () => {
   const [cartQuantities, setCartQuantities] = useState<Record<string, number>>({});
 
   const router = useRouter();
-  const API_URL = "http://192.168.144.2:5000/api/drinks"; // ✅ Backend API
+  const API_URL = "http://192.168.144.2:5001/api/drinks"; // ✅ Backend API
 
   // ✅ Fetch drinks data
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://192.168.144.2:5000/api/drinks");
+        const response = await axios.get("http://192.168.144.2:5001/api/drinks");
         console.log("🟢 API Response:", response.data); // ✅ Check API response
   
         const allProducts = response.data.map((p: any) => ({
           ...p,
           img: p.img.startsWith("http")
             ? p.img
-            : `http://192.168.144.2:5000/${p.img.replace(/^\/+/, "")}`,
+            : `http://192.168.144.2:5001/${p.img.replace(/^\/+/, "")}`,
         }));
   
         console.log("🟢 Processed Product List:", allProducts); // ✅ Debug processed images
@@ -86,7 +86,7 @@ const Drinks: React.FC = () => {
     if (quantityToAdd > 0) {
       const imageUrl = item.img.startsWith("http")
         ? item.img
-        : `http://192.168.144.2:5000/${item.img?.replace(/^\/+/, "")}`;
+        : `http://192.168.144.2:5001/${item.img?.replace(/^\/+/, "")}`;
 
       addToCart({
         ...item,
@@ -133,7 +133,7 @@ const Drinks: React.FC = () => {
   source={{
     uri: item.img && item.img.startsWith("http")
       ? item.img
-      : `http://192.168.144.2:5000/${item.img.replace(/^\/+/, "")}`,
+      : `http://192.168.144.2:5001/${item.img.replace(/^\/+/, "")}`,
   }}
   style={styles.image}
   resizeMode="cover"

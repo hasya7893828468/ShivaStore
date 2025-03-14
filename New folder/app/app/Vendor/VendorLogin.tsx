@@ -29,7 +29,7 @@ const VendorLogin: React.FC = () => {
     try {
       setLoading(true);
 
-      const response = await axios.post("http://192.168.144.2:5000/api/vendors/login", {
+      const response = await axios.post("http://192.168.144.2:5001/api/vendors/login", {
         email,
         password,
       });
@@ -77,7 +77,7 @@ const VendorLogin: React.FC = () => {
       console.log("📍 Vendor Current Location:", { latitude, longitude });
 
       // ✅ Send location to backend
-      await axios.post("http://192.168.144.2:5000/api/vendors/update-location", {
+      await axios.post("http://192.168.144.2:5001/api/vendors/update-location", {
         vendorId,
         latitude,
         longitude,

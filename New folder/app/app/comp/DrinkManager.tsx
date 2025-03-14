@@ -35,10 +35,11 @@ const DrinkManager: React.FC = () => {
     Off: "",
   });
 
+  // ✅ Fetch all drinks on mount
   useEffect(() => {
     const fetchDrinks = async () => {
       try {
-        const res = await axios.get("http://192.168.144.2:5000/api/drinks");
+        const res = await axios.get("http://192.168.144.2:5001/api/drinks");
         console.log("✅ Fetched Drinks:", res.data);
         setDrinks(res.data);
       } catch (error) {
@@ -50,9 +51,11 @@ const DrinkManager: React.FC = () => {
     fetchDrinks();
   }, []);
 
+  // ✅ Handle input changes
   const handleChange = (name: string, value: string) => {
     setNewDrink((prev) => ({ ...prev, [name]: value }));
 
+    // ✅ Auto-calculate discount percentage
     if (name === "Dprice") {
       const originalPrice = parseFloat(newDrink.price);
       const discountedPrice = parseFloat(value);
@@ -63,19 +66,22 @@ const DrinkManager: React.FC = () => {
     }
   };
 
+  // ✅ Pick image from gallery
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
+      allowsEditing: false, // ❌ Disable cropping to keep full image
+      aspect: [4, 3], // (Optional) You can remove this if you want any aspect ratio
       quality: 1,
     });
-
+  
     if (!result.canceled) {
       setNewDrink((prev) => ({ ...prev, img: result.assets[0].uri }));
     }
   };
+  
 
+  // ✅ Add new drink
   const handleAddDrink = async () => {
     if (!newDrink.name || !newDrink.img || !newDrink.price) {
       Alert.alert("⚠️ Warning", "Please fill all fields!");
@@ -87,6 +93,7 @@ const DrinkManager: React.FC = () => {
     formData.append("price", newDrink.price);
     formData.append("Dprice", newDrink.Dprice || "");
     formData.append("Off", newDrink.Off || "");
+
     formData.append("img", {
       uri: newDrink.img,
       type: "image/jpeg",
@@ -94,7 +101,7 @@ const DrinkManager: React.FC = () => {
     });
 
     try {
-      const res = await axios.post("http://192.168.144.2:5000/api/drinks", formData, {
+      const res = await axios.post("http://192.168.144.2:5001/api/drinks", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -107,6 +114,7 @@ const DrinkManager: React.FC = () => {
     }
   };
 
+  // ✅ Delete a drink
   const handleDeleteDrink = async (id: string) => {
     Alert.alert("Confirm Delete", "Are you sure you want to delete this drink?", [
       { text: "Cancel", style: "cancel" },
@@ -115,7 +123,7 @@ const DrinkManager: React.FC = () => {
         style: "destructive",
         onPress: async () => {
           try {
-            await axios.delete(`http://192.168.144.2:5000/api/drinks/${id}`);
+            await axios.delete(`http://192.168.144.2:5001/api/drinks/${id}`);
             setDrinks(drinks.filter((drink) => drink._id !== id));
           } catch (error) {
             console.error("❌ Error deleting drink:", error.response?.data || error.message);
@@ -128,9 +136,10 @@ const DrinkManager: React.FC = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={{ flex: 1, backgroundColor: "#f8f8f8", padding: 20 }}>
-        <Text style={{ fontSize: 24, fontWeight: "bold", textAlign: "center" }}>🥤 Drink Manager</Text>
+      <View style={{ flex: 1, backgroundColor: "#f8f8f8", padding: 30 }}>
+        <Text style={{ fontSize: 24, fontWeight: "bold", textAlign: "center" }}>🍹 Drink Manager</Text>
 
+        {/* ✅ Add Drink Form */}
         <View style={{ backgroundColor: "#fff", padding: 20, borderRadius: 10, marginTop: 20 }}>
           <TextInput placeholder="Drink Name" value={newDrink.name} onChangeText={(text) => handleChange("name", text)} style={{ borderBottomWidth: 1, marginBottom: 10, padding: 8 }} />
 
@@ -147,6 +156,31 @@ const DrinkManager: React.FC = () => {
             <Text style={{ color: "white" }}>Add Drink</Text>
           </TouchableOpacity>
         </View>
+
+        {/* ✅ Drink List */}
+        {loading ? (
+          <ActivityIndicator size="large" color="#007bff" />
+        ) : (
+          <DraggableFlatList data={drinks} keyExtractor={(item) => item._id} renderItem={({ item, drag }) => (
+            <TouchableOpacity onLongPress={drag} style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: "#fff", padding: 10, marginBottom: 10, borderRadius: 8 }}>
+              <Image
+                source={{
+                  uri: item.img.startsWith("http")
+                    ? item.img
+                    : `http://192.168.144.2:5001${item.img.startsWith("/") ? item.img : "/" + item.img}`,
+                }}
+                style={{ width: 60, height: 60, borderRadius: 8 }}
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 16, fontWeight: "bold" }}>{item.name}</Text>
+                <Text style={{ color: "gray" }}>₹{item.price} | ₹{item.Dprice} | {item.Off}% OFF</Text>
+              </View>
+              <TouchableOpacity onPress={() => handleDeleteDrink(item._id)}>
+                <Trash2 size={24} color="red" />
+              </TouchableOpacity>
+            </TouchableOpacity>
+          )} onDragEnd={({ data }) => setDrinks([...data])} style={{ marginTop: 20 }} />
+        )}
       </View>
     </GestureHandlerRootView>
   );

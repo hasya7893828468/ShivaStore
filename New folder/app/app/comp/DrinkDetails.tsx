@@ -98,7 +98,7 @@ const DrinkDetails: React.FC = () => {
               source={{
                 uri: drink.img.startsWith("http")
                   ? drink.img
-                  : `http://192.168.144.2:5000/${drink.img.replace(/^\/+/, "")}`,
+                  : `http://192.168.144.2:5001/${drink.img.replace(/^\/+/, "")}`,
               }}
               style={[styles.image, { height: cardSize }]}
               onError={(e) => {

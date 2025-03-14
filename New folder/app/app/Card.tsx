@@ -84,7 +84,7 @@ const ProductDetails: React.FC = () => {
           <Image
             source={{
               uri: product.img
-                ? `http://192.168.144.2:5000/${product.img.replace(/^\/+/, "")}`
+                ? `http://192.168.144.2:5001/${product.img.replace(/^\/+/, "")}`
                 : "https://via.placeholder.com/200",
             }}
             style={[styles.image, { height: cardSize }]}

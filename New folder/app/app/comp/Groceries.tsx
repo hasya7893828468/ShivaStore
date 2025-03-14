@@ -24,78 +24,93 @@ const Groceries: React.FC = () => {
   const [productList, setProductList] = useState<any[]>([]);
   const [cartQuantities, setCartQuantities] = useState<Record<string, number>>({});
   const [cartBadgeVisibility, setCartBadgeVisibility] = useState<Record<string, boolean>>({});
-
+  
   const router = useRouter();
 
+  // ✅ Fetch Data with Debugging
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const storedData = await AsyncStorage.getItem('groceriesData');
-        if (storedData) {
-          setProductList(JSON.parse(storedData));
+        console.log("📡 Fetching groceries from API...");
+        
+        const response = await axios.get('http://192.168.144.2:5001/api/groceries');
+        
+        console.log("✅ API Response:", response.data);
+
+        if (!Array.isArray(response.data)) {
+          console.error("❌ API returned an invalid response:", response.data);
           return;
         }
 
-        const groceriesRes = await axios.get('http://192.168.144.2:5000/api/groceries');
-        const allProducts = groceriesRes.data.map((p: any) => ({ ...p, category: 'grocery' }));
+        const formattedData = response.data.map((p: any) => ({
+          ...p,
+          category: 'grocery',
+        }));
 
-        await AsyncStorage.setItem('groceriesData', JSON.stringify(allProducts));
-        setProductList(allProducts);
+        await AsyncStorage.setItem('groceriesData', JSON.stringify(formattedData));
+        setProductList(formattedData);
       } catch (error) {
-        console.error("❌ Error fetching groceries:", error);
+        console.error("❌ Error fetching groceries:", error.response?.data || error.message);
       }
     };
 
     fetchData();
   }, []);
 
+  // ✅ Store Cart Quantities in AsyncStorage
   useEffect(() => {
     AsyncStorage.setItem('groceriesQuantities', JSON.stringify(cartQuantities));
   }, [cartQuantities]);
 
-  const filteredData = useMemo(
-     () => productList.filter(val => val?.name?.toLowerCase().includes((searchValue ?? "").toLowerCase())),
-     [productList, searchValue]
-   );
-   
+  // ✅ Search Filter
+  const filteredData = useMemo(() => {
+    return productList.filter((val) =>
+      val?.name?.toLowerCase().includes((searchValue ?? "").toLowerCase())
+    );
+  }, [productList, searchValue]);
 
+  // ✅ Handle Increment
   const handleIncrement = (id: string) => {
-    setCartQuantities(prev => ({ ...prev, [id]: (prev[id] ?? 0) + 1 }));
-    setCartBadgeVisibility(prev => ({ ...prev, [id]: true }));
+    setCartQuantities((prev) => ({ ...prev, [id]: (prev[id] ?? 0) + 1 }));
+    setCartBadgeVisibility((prev) => ({ ...prev, [id]: true }));
   };
 
+  // ✅ Handle Decrement
   const handleDecrement = (id: string) => {
-    setCartQuantities(prev => {
+    setCartQuantities((prev) => {
       const updatedQuantity = Math.max((prev[id] ?? 0) - 1, 0);
       return { ...prev, [id]: updatedQuantity };
     });
-    setCartBadgeVisibility(prev => ({ ...prev, [id]: (cartQuantities[id] ?? 0) > 1 }));
+    setCartBadgeVisibility((prev) => ({ ...prev, [id]: (cartQuantities[id] ?? 0) > 1 }));
   };
 
+  // ✅ Handle Add to Cart
   const handleAddToCart = (item: any) => {
     const quantityToAdd = cartQuantities[item._id] ?? 0;
     if (quantityToAdd > 0) {
       addToCart({
         ...item,
-        img: `http://192.168.144.2:5000/${item?.img?.replace(/^\/+/, '')}`,
+        img: `http://192.168.144.2:5001/${item?.img?.replace(/^\/+/, '')}`,
         quantity: quantityToAdd,
       });
-      setCartBadgeVisibility(prev => ({ ...prev, [item._id]: false }));
-      Alert.alert("Added to cart", `${item.name} added successfully!`);
+      setCartBadgeVisibility((prev) => ({ ...prev, [item._id]: false }));
+      Alert.alert("✅ Added to Cart", `${item.name} added successfully!`);
     }
   };
 
+  // ✅ Calculate Discount
   const calculateDiscount = (originalPrice: number, discountedPrice: number) => {
-    if (originalPrice <= 0 || discountedPrice <= 0 || discountedPrice < originalPrice) return 0;
-    return Math.abs(Math.round(((originalPrice - discountedPrice) / originalPrice) * 100));
+    if (originalPrice <= 0 || discountedPrice <= 0 || discountedPrice >= originalPrice) return 0;
+    return Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
   };
-  
 
   return (
     <View style={styles.container}>
       <NavBar />
       <SearchBar />
       <HomeCard />
+
+      {/* ✅ Product List */}
       <FlatList
         data={filteredData}
         keyExtractor={(item) => item._id}
@@ -104,22 +119,24 @@ const Groceries: React.FC = () => {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <TouchableOpacity
-  onPress={async () => {
-    await AsyncStorage.setItem("selectedGrocery", JSON.stringify(item)); // ✅ Store selected grocery item
-    router.push("/comp/GroceryDetails"); // ✅ Navigate to GroceryDetails
-  }}
->
-  <Image
-    source={{ uri: `http://192.168.144.2:5000/${item.img?.replace(/^\/+/, "")}` }}
-    style={styles.image}
-    resizeMode="cover"
-    onError={(e) => console.error("❌ Image Load Error:", e.nativeEvent.error)}
-  />
-</TouchableOpacity>
+              onPress={async () => {
+                await AsyncStorage.setItem("selectedGrocery", JSON.stringify(item));
+                router.push("/comp/GroceryDetails");
+              }}
+            >
+              <Image
+                source={{ uri: `http://192.168.144.2:5001/${item.img?.replace(/^\/+/, "")}` }}
+                style={styles.image}
+                resizeMode="cover"
+                onError={(e) => console.error("❌ Image Load Error:", e.nativeEvent.error)}
+              />
+            </TouchableOpacity>
+            <View>
             <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
               {item.name}
-            </Text>
-            <View style={styles.priceContainer}>
+            </Text>  
+            </View>
+           <View style={styles.priceContainer}>
               <Text style={styles.price}>₹{item.price}</Text>
               <Text style={styles.discount}>₹{item.Dprice}</Text>
             </View>
@@ -134,7 +151,9 @@ const Groceries: React.FC = () => {
                 style={styles.quantityInput}
                 value={String(cartQuantities[item._id] ?? 0)}
                 keyboardType="numeric"
-                onChangeText={(text) => setCartQuantities(prev => ({ ...prev, [item._id]: parseInt(text) || 0 }))}
+                onChangeText={(text) =>
+                  setCartQuantities((prev) => ({ ...prev, [item._id]: parseInt(text) || 0 }))
+                }
               />
               <TouchableOpacity onPress={() => handleIncrement(item._id)} style={styles.button}>
                 <Plus size={18} color="white" />
@@ -152,18 +171,12 @@ const Groceries: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  row: {
-    justifyContent: "space-between",
-  },
+  container: { flex: 1, backgroundColor: "#f5f5f5" },
+  row: { justifyContent: "space-between" },
   card: {
     backgroundColor: "white",
     borderRadius: 10,
-      padding: 1,
-    
+    padding: 8,
     marginBottom: 12,
     width: "49%",
     alignItems: "center",
@@ -173,41 +186,12 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  image: {
-    width: 190,
-    height: 149,
-    borderRadius: 8,
-  },
-  name: {
-    fontSize: 14,
-    fontWeight: "bold",
-    marginTop: 8,
-    textAlign: "center",
-    width: "90%",
-    overflow: "hidden",
-  },
-  priceContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 4,
-  },
-  discountBadge: {
-    fontSize: 12,
-    color: "red",
-    fontWeight: "bold",
-    marginLeft: 6,
-  },
-  price: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "green",
-    marginRight: 6,
-  },
-  discount: {
-    fontSize: 12,
-    color: "gray",
-    textDecorationLine: "line-through",
-  },
+  image: { width: 190, height: 149, borderRadius: 8 },
+  name: { fontSize: 14, fontWeight: "bold", marginTop: 8, textAlign: "center", width: "90%" },
+  priceContainer: { flexDirection: "row", alignItems: "center", marginTop: 4 },
+  discountBadge: { fontSize: 12, color: "red", fontWeight: "bold", marginLeft: 6 },
+  price: { fontSize: 20, fontWeight: "bold", color: "green", marginRight: 6 },
+  discount: { fontSize: 12, color: "gray", textDecorationLine: "line-through" },
   controls: {
     flexDirection: "row",
     alignItems: "center",
@@ -244,3 +228,6 @@ const styles = StyleSheet.create({
 });
 
 export default Groceries;
+
+
+

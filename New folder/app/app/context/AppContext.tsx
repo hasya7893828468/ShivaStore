@@ -51,7 +51,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [user, setUser] = useState<User | null>(null);
   const [vendorId, setVendorId] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
-  const API_URL = "http://192.168.144.2:5000/api"; // Backend URL
+  const API_URL = "http://192.168.144.2:5001/api"; // Backend URL
   const isDataLoaded = useRef(false); // Prevent multiple API calls
   const [searchValue, setSearchValue] = useState(""); // ✅ Ensure it's properly defined
 
@@ -190,7 +190,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         return;
       }
   
-      const vendorId = "67bda14d08437495dde45ef3"; // Ensure this is dynamically set if needed
+      const vendorId = "67d335e41999696accd90ce8"; // Ensure this is dynamically set if needed
   
       // ✅ Construct order data correctly
       const orderData = {

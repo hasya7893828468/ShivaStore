@@ -35,40 +35,41 @@ const Main: React.FC = () => {
   const [cartBadgeVisibility, setCartBadgeVisibility] = useState<Record<string, boolean>>({});
 
   const router = useRouter();
-  const apiUrl = "http://192.168.144.2:5000/api";
+  const apiUrl = "http://192.168.144.2:5001/api";
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("Fetching products...");
-        const storedData = await AsyncStorage.getItem("allProductsData");
-
-        if (storedData) {
-          setProductList(JSON.parse(storedData));
-          return;
-        }
-
+        console.log("📥 Fetching products from API...");
+  
         const [groceriesRes, drinksRes, snacksRes] = await Promise.all([
           axios.get(`${apiUrl}/groceries`).catch(() => ({ data: [] })),
           axios.get(`${apiUrl}/drinks`).catch(() => ({ data: [] })),
           axios.get(`${apiUrl}/snacks`).catch(() => ({ data: [] })),
         ]);
-
+  
+        if (!groceriesRes.data || !drinksRes.data || !snacksRes.data) {
+          throw new Error("Invalid data received");
+        }
+  
         const allProducts = [
           ...groceriesRes.data.map((p: Product) => ({ ...p, category: "grocery" })),
           ...drinksRes.data.map((p: Product) => ({ ...p, category: "drink" })),
           ...snacksRes.data.map((p: Product) => ({ ...p, category: "snacks" })),
         ];
-
+  
+        console.log("✅ Products fetched successfully:", allProducts.length);
+        
         await AsyncStorage.setItem("allProductsData", JSON.stringify(allProducts));
         setProductList(allProducts);
       } catch (error) {
         console.error("❌ Error fetching products:", error);
       }
     };
-
+  
     fetchData();
   }, []);
+  
 
   useEffect(() => {
     AsyncStorage.setItem("mainQuantities", JSON.stringify(cartQuantities));
@@ -99,7 +100,7 @@ const Main: React.FC = () => {
     if (quantityToAdd > 0) {
       const imageUrl = item.img.startsWith("http")
         ? item.img
-        : `http://192.168.144.2:5000/${item.img?.replace(/^\/+/, "")}`;
+        : `http://192.168.144.2:5001/${item.img?.replace(/^\/+/, "")}`;
 
       addToCart({
         ...item,
@@ -138,7 +139,7 @@ const Main: React.FC = () => {
             >
               <Image
                 source={{
-                  uri: `http://192.168.144.2:5000/${item.img?.replace(/^\/+/, "")}`,
+                  uri: `http://192.168.144.2:5001/${item.img?.replace(/^\/+/, "")}`,
                 }}
                 style={styles.image}
                 resizeMode="cover"

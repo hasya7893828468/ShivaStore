@@ -41,7 +41,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
       {/* Product Image */}
       <Image
   source={{
-    uri: `http://192.168.144.2:5000/${item.img?.replace(/^\/+/, "") || "placeholder.png"}`,
+    uri: `http://192.168.144.2:5001/${item.img?.replace(/^\/+/, "") || "placeholder.png"}`,
   }}
   style={styles.image}
   resizeMode="cover"

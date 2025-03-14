@@ -84,7 +84,7 @@ const GroceryDetails: React.FC = () => {
           <Image
             source={{
               uri: grocery.img
-                ? `http://192.168.144.2:5000/${grocery.img.replace(/^\/+/, "")}`
+                ? `http://192.168.144.2:5001/${grocery.img.replace(/^\/+/, "")}`
                 : "https://via.placeholder.com/200",
             }}
             style={[styles.image, { height: cardSize }]}

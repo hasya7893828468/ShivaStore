@@ -85,7 +85,7 @@ const SnackDetails: React.FC = () => {
   source={{
     uri: snack.img.startsWith("http")
       ? snack.img
-      : `http://192.168.144.2:5000${snack.img.startsWith("/") ? snack.img : "/" + snack.img}`,
+      : `http://192.168.144.2:5001${snack.img.startsWith("/") ? snack.img : "/" + snack.img}`,
   }}
   style={{ width: 300, height: 400,marginTop:50, borderRadius: 8 }}
 />

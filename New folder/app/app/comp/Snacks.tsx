@@ -31,7 +31,7 @@ const Snacks: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const snacksRes = await axios.get("http://192.168.144.2:5000/api/snacks");
+        const snacksRes = await axios.get("http://192.168.144.2:5001/api/snacks");
         console.log("✅ Fetched Snacks:", snacksRes.data); // Log fetched data
         setProductList(snacksRes.data);
       } catch (error) {
@@ -71,7 +71,7 @@ const Snacks: React.FC = () => {
     if (quantityToAdd > 0) {
       addToCart({
         ...item,
-        img: `http://192.168.144.2:5000/${item?.img?.replace(/^\/+/, '')}`,
+        img: `http://192.168.144.2:5001/${item?.img?.replace(/^\/+/, '')}`,
         quantity: quantityToAdd,
       });
       setCartBadgeVisibility(prev => ({ ...prev, [item._id]: false }));
@@ -104,7 +104,7 @@ const Snacks: React.FC = () => {
   }}
 >
   <Image
-    source={{ uri: `http://192.168.144.2:5000/${item.img?.replace(/^\/+/, "")}` }}
+    source={{ uri: `http://192.168.144.2:5001/${item.img?.replace(/^\/+/, "")}` }}
     style={styles.image}
     resizeMode="cover"
   />

@@ -35,7 +35,7 @@ const MyOrders: React.FC = () => {
     const fetchOrders = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`http://192.168.144.2:5000/api/orders/user/${userId}`);
+        const response = await axios.get(`http://192.168.144.2:5001/api/orders/user/${userId}`);
         const ordersWithTotal = response.data.map(order => {
           const grandTotal = order.cartItems.reduce((sum, item) => {
             item.totalPrice = (item.price || 0) * (item.quantity || 1);

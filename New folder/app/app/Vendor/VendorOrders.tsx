@@ -54,7 +54,7 @@ const VendorOrders: React.FC<Props> = ({ vendorLocation }) => {
       if (!vendorId) return;
 
       try {
-        const response = await axios.get(`http://192.168.144.2:5000/api/vendor-cart/${vendorId}`);
+        const response = await axios.get(`http://192.168.144.2:5001/api/vendor-cart/${vendorId}`);
         console.log("📦 Orders with Customer Details:", response.data);
 
         const sortedOrders = response.data.sort((a: Order, b: Order) =>
@@ -78,7 +78,7 @@ const VendorOrders: React.FC<Props> = ({ vendorLocation }) => {
         prevOrders.map((order) => (order._id === orderId ? { ...order, status: "Completed" } : order))
       );
 
-      await axios.post("http://192.168.144.2:5000/api/vendor-cart/complete-order", { orderId });
+      await axios.post("http://192.168.144.2:5001/api/vendor-cart/complete-order", { orderId });
       console.log("✅ Order Successfully Completed");
     } catch (error) {
       console.error("❌ Error completing order:", error);
@@ -114,7 +114,7 @@ const VendorOrders: React.FC<Props> = ({ vendorLocation }) => {
 
               {order.cartItems.map((item) => (
                 <View key={item._id} style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-                  <Image source={{ uri: `http://192.168.144.2:5000${item.img}` }} style={{ width: 50, height: 50, borderRadius: 6 }} />
+                  <Image source={{ uri: `http://192.168.144.2:5001${item.img}` }} style={{ width: 50, height: 50, borderRadius: 6 }} />
                   <View style={{ flex: 1, marginLeft: 10 }}>
                     <Text>{item.name}</Text>
                     <Text>₹{item.price} x {item.quantity}</Text>

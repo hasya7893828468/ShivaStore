@@ -39,7 +39,7 @@ const SnackManager: React.FC = () => {
   useEffect(() => {
     const fetchSnacks = async () => {
       try {
-        const res = await axios.get("http://192.168.144.2:5000/api/snacks");
+        const res = await axios.get("http://192.168.144.2:5001/api/snacks");
         console.log("✅ Fetched Snacks:", res.data);
         setSnacks(res.data);
       } catch (error) {
@@ -100,7 +100,7 @@ const SnackManager: React.FC = () => {
     });
 
     try {
-      const res = await axios.post("http://192.168.144.2:5000/api/snacks", formData, {
+      const res = await axios.post("http://192.168.144.2:5001/api/snacks", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -122,7 +122,7 @@ const SnackManager: React.FC = () => {
         style: "destructive",
         onPress: async () => {
           try {
-            await axios.delete(`http://192.168.144.2:5000/api/snacks/${id}`);
+            await axios.delete(`http://192.168.144.2:5001/api/snacks/${id}`);
             setSnacks(snacks.filter((snack) => snack._id !== id));
           } catch (error) {
             console.error("❌ Error deleting snack:", error.response?.data || error.message);
@@ -135,7 +135,7 @@ const SnackManager: React.FC = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={{ flex: 1, backgroundColor: "#f8f8f8", padding: 20 }}>
+      <View style={{ flex: 1, backgroundColor: "#f8f8f8", padding: 30 }}>
         <Text style={{ fontSize: 24, fontWeight: "bold", textAlign: "center" }}>🍿 Snack Manager</Text>
 
         {/* ✅ Add Snack Form */}
@@ -166,7 +166,7 @@ const SnackManager: React.FC = () => {
   source={{
     uri: item.img.startsWith("http")
       ? item.img
-      : `http://192.168.144.2:5000${item.img.startsWith("/") ? item.img : "/" + item.img}`,
+      : `http://192.168.144.2:5001${item.img.startsWith("/") ? item.img : "/" + item.img}`,
   }}
   style={{ width: 60, height: 60, borderRadius: 8 }}
 />

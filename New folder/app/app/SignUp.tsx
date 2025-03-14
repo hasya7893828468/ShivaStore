@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 
-const apiUrl = "http://192.168.144.2:5000/api/auth/register"; // Use 10.0.2.2 for local API in Android Emulator
+const apiUrl = "http://192.168.144.2:5001/api/auth/register";
 
 const SignUpScreen: React.FC = () => {
   const [name, setName] = useState("");
@@ -37,7 +37,7 @@ const SignUpScreen: React.FC = () => {
 
       if (response.data.success) {
         Alert.alert("Success", "Account created! Redirecting to login.");
-        navigation.navigate("Login" as never); // Navigate to Login screen
+        navigation.navigate("Login" as never);
       } else {
         Alert.alert("Error", response.data.message || "Registration failed.");
       }
@@ -49,15 +49,15 @@ const SignUpScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
-
+      <Text style={styles.title}>Create an Account</Text>
+      <Text style={styles.subtitle}>Join us and start your journey</Text>
+      
       <TextInput
         placeholder="Name"
         value={name}
         onChangeText={setName}
         style={styles.input}
       />
-
       <TextInput
         placeholder="Email"
         value={email}
@@ -65,7 +65,6 @@ const SignUpScreen: React.FC = () => {
         keyboardType="email-address"
         style={styles.input}
       />
-
       <TextInput
         placeholder="Password"
         value={password}
@@ -73,14 +72,12 @@ const SignUpScreen: React.FC = () => {
         secureTextEntry
         style={styles.input}
       />
-
       <TextInput
         placeholder="Address"
         value={address}
         onChangeText={setAddress}
         style={styles.input}
       />
-
       <TextInput
         placeholder="Phone"
         value={phone}
@@ -88,13 +85,13 @@ const SignUpScreen: React.FC = () => {
         keyboardType="phone-pad"
         style={styles.input}
       />
-
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+      
+      <TouchableOpacity style={styles.signupButton} onPress={handleSignUp}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
-
+      
       <TouchableOpacity onPress={() => navigation.navigate("Login" as never)}>
-        <Text style={styles.linkText}>Already have an account? Login</Text>
+        <Text style={styles.linkText}>Already have an account? <Text style={styles.link}>Login</Text></Text>
       </TouchableOpacity>
     </View>
   );
@@ -111,35 +108,50 @@ const styles = StyleSheet.create({
     backgroundColor: "#f4f4f4",
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
+    color: "#161616",
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#525252",
     marginBottom: 20,
   },
   input: {
     width: "100%",
-    padding: 12,
-    marginVertical: 8,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
+    height: 50,
     backgroundColor: "#fff",
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    fontSize: 16,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  button: {
-    width: "100%",
+  signupButton: {
+    backgroundColor: "#0f62fe",
     padding: 14,
-    backgroundColor: "#4F46E5",
     borderRadius: 8,
     alignItems: "center",
-    marginVertical: 10,
+    width: "100%",
+    marginTop: 10,
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
   },
   linkText: {
-    color: "#4F46E5",
     fontSize: 14,
     marginTop: 10,
+    color: "#161616",
+  },
+  link: {
+    color: "#0f62fe",
+    fontWeight: "bold",
   },
 });

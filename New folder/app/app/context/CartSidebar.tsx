@@ -68,7 +68,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ onClose }) => {
             cart.map((item) => (
               <View key={item._id} style={styles.cartItem}>
                 <Image 
-                  source={{ uri: item.img.startsWith("http") ? item.img : `http://192.168.144.2:5000/${item.img.replace(/^\/+/, "")}` }}
+                  source={{ uri: item.img.startsWith("http") ? item.img : `http://192.168.144.2:5001/${item.img.replace(/^\/+/, "")}` }}
                   style={styles.productImage}
                   resizeMode="contain"
                 />
